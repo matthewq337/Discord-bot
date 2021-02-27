@@ -67,4 +67,4 @@ async def on_message(message):
         await client.process_commands(message)
 	
 
-client.run('insert id here ')
+client.run(os.environ["discord_token"])
