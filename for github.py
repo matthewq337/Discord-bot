@@ -1,4 +1,5 @@
 import discord
+import os
 #imports discord
 from datetime import date
 today = date.today() 
