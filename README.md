@@ -1,7 +1,7 @@
 # knarfbot
 discord bot written in python
 <p align="center">
-  <a href="https://discord.gg/88HW2GF8Nd">
+  <a href="https://discord.gg/hcJbRpvZPG">
  <img alt="icon" src="./docs/media/icon.png">
   </a>
 </p>
