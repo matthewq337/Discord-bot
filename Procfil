@@ -1,1 +1,1 @@
-worker: bot.py
+worker: for github.py
