@@ -19,10 +19,6 @@ commands list can be found in the [wiki](https://github.com/killertofus/knarfbot
 
 
 
-# socials
- <a href="https://twitter.com/KillerofTofu">
-<img alt="twitter"  src="https://img.shields.io/twitter/follow/KillerofTofu?style=social"></a>
-
 
 
 # Links
