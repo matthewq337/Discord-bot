@@ -6,7 +6,7 @@ discord bot written in python
   </a>
 </p>
   <a href="https://discord.gg/hcJbRpvZPG">
- <img alt="Discord server"  src="https://img.shields.io/discord/170691335953580032?logo=discord&style=flat-square"></a>
+ <img alt="Discord server"  src="https://img.shields.io/discord/815358648800509984?logo=discord&style=flat-square"></a>
  
 
 #
