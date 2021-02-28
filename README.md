@@ -7,7 +7,7 @@ discord bot written in python
 </p>
   <a href="https://discord.gg/xcs48YkaWV">
  <img alt="Discord server"  src="https://img.shields.io/discord/815358648225366037?logo=discord&style=flat-square"></a>
- m787373284-8e6a489fd04d1f5df78ed058
+https://img.shields.io/uptimerobot/status/m787373284-187b0de45b301c6b009c33e1
 #
 
 
