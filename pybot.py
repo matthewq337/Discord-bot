@@ -1,3 +1,5 @@
+from replit import db
+from keep_alive import keep_alive
 import discord
 import os
 #imports discord
@@ -27,8 +29,8 @@ async def on_ready():
 
 @client.command(pass_context=True)
 async def version(ctx):
-    myEmbed = discord.Embed(title="current Version",
-                            description=" version 1.0 :)",
+    myEmbed = discord.Embed(title="",
+                            description=" ",
                             color=0x00ff00)
     myEmbed.add_field(name="Version Code", value='V1.0', inline=False)
     myEmbed.add_field(name="released", value=today, inline=False)
@@ -55,3 +57,4 @@ async def ban(ctx, member: discord.Member, *, reason=None):
 
 keep_alive()
 client.run(os.environ["TOKEN"])
+
