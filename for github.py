@@ -68,4 +68,4 @@ async def on_message(message):
         await client.process_commands(message)
 	
 
-client.run(os.environ["discord_token"])
+client.run(os.environ["DISCORD_TOKEN"])
