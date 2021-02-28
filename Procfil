@@ -1,1 +1,1 @@
-worker:  python forgithub.py
+worker:  python pybot.py
