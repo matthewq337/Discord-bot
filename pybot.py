@@ -1,5 +1,6 @@
 import discord
 import os
+import randfacts
 #imports discord
 from datetime import date
 today = date.today() 
@@ -7,6 +8,7 @@ today = date.today()
 import discord.ext
 import re
 from discord.ext import commands
+from randfacts import getFact
 client = discord.Client()
 client = commands.Bot(command_prefix = '!')
 from better_profanity import profanity
@@ -25,47 +27,12 @@ async def version(ctx):
         
         await ctx.channel.send(embed=myEmbed)
         
-
-    
-
-
-
-
-#Admin commands
-@client.command()
-@commands.has_role('lul')
-async def clear(ctx, amount=6):
-    await ctx.channel.purge(limit=amount)
-@clear.error
-async def clear_error(ctx, error):
-    if isinstance(error, commands.MissingRole):
-        await ctx.send('''just be admin <:4Head:795144565744861215>''')
-@client.command()
-@commands.has_role('lul')
-async def kick(ctx, member : discord.Member, *, reason=None):
-    await member.kick(reason=reason)
-@kick.error
-async def kick_error(ctx, error):
-    if isinstance(error, commands.MissingRole):
-        await ctx.send('''just be admin <:4Head:795144565744861215>''')
-
-@client.command()
-@commands.has_role('lul')
-async def ban(ctx, member : discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-@ban.error
-async def ban_error(ctx, error):
- if isinstance(error, commands.MissingRole):
-        await ctx.send('''just be admin <:4Head:795144565744861215>''')
-
-
 @client.event
 async def on_message(message):
-    if profanity.contains_profanity(message.content): 
-        await message.delete()
-        await message.author.send("""Those Words are Not Allowed To Be Used! Continued Use Of Mentioned Words Will Lead To a Punishment!""")
-    else:
-        await client.process_commands(message)
-	
+
+    if message.content.find("!fact") != -1:
+        await message.channel.send(getFact(False)) 
+
+
 
 client.run(os.environ["DISCORD_TOKEN"])
