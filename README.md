@@ -16,13 +16,3 @@ discord bot written in python
 
 example of bot
 commands list can be found in the [wiki](https://github.com/killertofus/knarfbot/wiki)
-
-
-
-
-
-# Links
-using better profanity https://github.com/snguyenthanh/better_profanity for cleaning swear words
-
-
-using https://github.com/sameerkumar18/useless-facts-api for facts
