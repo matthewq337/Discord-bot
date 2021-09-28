@@ -14,4 +14,4 @@ discord bot written in python
 
 
 example of bot
-commands list can be found in the [wiki](https://github.com/killertofus/knarfbot/wiki)
+commands list can be found in the [wiki]()
