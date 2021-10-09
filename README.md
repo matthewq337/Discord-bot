@@ -1,4 +1,4 @@
-# devbot
+# techmo
 discord bot written in python
 <p align="center">
   <a href="https://discord.gg/xcs48YkaWV">
@@ -14,4 +14,4 @@ discord bot written in python
 
 
 example of bot
-commands list can be found in the [wiki]()
+commands list can be found in the [wiki](https://www.mattquintanilla.xyz/bot/commands.html)
