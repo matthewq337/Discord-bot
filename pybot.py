@@ -32,7 +32,7 @@ class JsonDict(dict):
 prefixes = JsonDict("prefixes.json")
  
  
-TOKEN = "ODE1MzYyOTkzNTcwOTcxNjQ4.YDrT9g.sDbCVaQ9opmmm6bIymaQUZSXTZM"
+TOKEN = ""
 import json
 import os
 import random
