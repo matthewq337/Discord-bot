@@ -1,14 +1,14 @@
 import json
 import os
 import random
- 
+import typing
 import aiohttp
 import discord
+from discord import member
 from discord.ext import commands
 from dotenv import load_dotenv
- 
 load_dotenv()
- 
+TOKEN=""
  
 DEFAULT_PREFIX = "!"
  
@@ -88,30 +88,51 @@ async def fact(ctx: commands.Context):
             await ctx.send(_json.get("data"))
  
  
-@bot.command()
-async def clear(ctx, amount=6):
-    """
-    Clear messages from a channel
- 
-    Args:
-        amount (optional): Number of messages to remove. Defaults to 6.
-    """
-    await ctx.channel.purge(limit=amount)
+
  
  
 @commands.has_permissions(administrator=True)
-@bot.command()
+
 async def changeprefix(ctx, prefix):
-    """
-    Change the prefix for your guild
+    
+    #Change the prefix for your guild
  
-    Args:
-        prefix: The new prefix to use
-    """
-    prefixes[str(ctx.guild.id)] = prefix
-    prefixes.save()
-    await ctx.send(f"Prefix has been changed to `{prefix}`")
+    #Args:
+        #prefix: The new prefix to use
+    
+        prefixes[str(ctx.guild.id)] = prefix
+        prefixes.save()
+        await ctx.send(f"Prefix has been changed to `{prefix}`")
  
+
+
+@bot.command()
+async def kick(ctx, member : discord.Member, *, reason=None):
+    await member.kick(reason=reason)
+
+@bot.command()
+async def ban(ctx, member : discord.Member, *, reason=None):
+    await member.ban(reason=reason)
+    await ctx.send(f"Banned {member.mention}")
+@bot.command()
+async def unban(ctx, user: discord.User): 
+    banned_users = await ctx.guild.bans()
+    if user in banned_users:
+        await ctx.guild.unban(user)
+        await ctx.send(f"Unbanned {user.mention}")
+
+
+@bot.command()
+async def clear(ctx, amount=6):
+    
+    #Clear messages from a channel
  
-bot.run(os.getenv("TOKEN"))
- 
+    #Args:
+        #amount (optional): Number of messages to remove. Defaults to 6.
+    
+        await ctx.channel.purge(limit=amount)
+
+
+
+
+bot.run("")
