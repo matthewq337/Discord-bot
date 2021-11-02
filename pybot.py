@@ -1,18 +1,62 @@
+import asyncio
 import json
 import os
 import random
-import typing
 import aiohttp
+import nextcord
 import discord
-from discord import member
-from discord.ext import commands
+from random import choice, randint
+from typing import Optional
+from nextcord import embeds
+from nextcord.ext.commands import BucketType
+from nextcord.ext.commands import (CommandNotFound, BadArgument, MissingRequiredArgument, CommandOnCooldown)
+from nextcord.ext.commands import cog
+from nextcord.ext.commands.cog import Cog
+from nextcord.ext.commands.errors import BadArgument
+from nextcord.ext.commands import cooldown
+from nextcord.ext.commands import has_permissions, MissingPermissions
+from nextcord.ext import commands
+from nextcord.ext.commands.help import DefaultHelpCommand
+from nextcord.utils import get
+from nextcord import client
 from dotenv import load_dotenv
+from datetime import date
+from nextcord.ext.commands import command, cooldown
+from better_profanity import profanity
+from nextcord.ext import commands
+today = date.today()
 load_dotenv()
+intents = nextcord.Intents.all()
 TOKEN=""
+
+
+
+
+
+
+Intents = nextcord.Intents.default()
+intents.members = True
+initial_extensions =[]
+    
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py"):
+        initial_extensions.append("cogs." + filename[:-3])
+print(initial_extensions)  
+if __name__ == "_main__":
+    for extension in initial_extensions:
+        client.load_extension(extension)
+
+
+
+def get_prefix(bot, message):
+    return prefixes.get(str(message.guild.id), DEFAULT_PREFIX)
  
+
+bot = commands.Bot(command_prefix=get_prefix)
+bot.remove_command("help")
 DEFAULT_PREFIX = "!"
- 
- 
+
+
 class JsonDict(dict):
     def __init__(self, file_name: str):
         self.file_name = file_name
@@ -26,23 +70,57 @@ class JsonDict(dict):
         with open(self.file_name, "w+") as file:
             json.dump(self, file, indent=2)
  
- 
 prefixes = JsonDict("prefixes.json")
- 
- 
-def get_prefix(bot, message):
-    return prefixes.get(str(message.guild.id), DEFAULT_PREFIX)
- 
- 
-bot = commands.Bot(command_prefix=get_prefix)
+    
+
+def syntax(command):
+    cmd_and_aliases = "|".join([str(command), *command.aliases])
+    params = []
+
+    for key, value in command.params.items():
+        if key not in ("self", "ctx"):
+            params.append(f"[{key}]" if "NoneType" in str(value) else f"<{key}>")
+
+
+    params = " ".join(params) 
+    return f"{cmd_and_aliases} {params}"
+
+
+
+
+    
+
+  
+
+
+
+
+
  
  
 @bot.event
 async def on_ready():
     print(f"logged in as {bot.user}")
-    await bot.change_presence(
-        status=discord.Status.online, activity=discord.Game("tf2")
-    )
+    for folder in os.listdir("modules"):
+        if os.path.exists(os.path.join("modules", folder, "cog.py")):
+            client.load_extension(f"modules.{folder}.cog")
+    await bot.change_presence( 
+        status=nextcord.Status.online, activity=nextcord.Game("tf2"))
+
+    
+    
+    
+    
+@bot.command(description = "help command")
+async def help(ctx):
+    embed = nextcord.Embed(title="help", description="help command")
+    for command in bot.walk_commands():
+        description = command.description
+        if not description or description is None or description == "":
+            description= "no description provided"
+        embed.add_field(name=f"`{command.name}{command.signature if command.signature is not None else ''}`", value=description)
+    await ctx.send(embed=embed)
+ 
  
  
 @bot.event
@@ -52,20 +130,21 @@ async def on_guild_join(guild):
  
  
 @bot.command()
+@cooldown(1, 60, BucketType.user)
 async def ping(ctx: commands.Context):
     """
     Returns the bots estimated latency to discord servers
     """
     await ctx.send(f"pong {round(bot.latency * 1000)}ms")
- 
- 
-@bot.command()
+
+
+@bot.command(name = "roll ", description="roll a dice")
 async def roll(ctx: commands.Context):
     """
     Get a random number from 0-500
     """
     n = random.randint(0, 500)
-    embed = discord.Embed(colour=discord.Colour.green())
+    embed = nextcord.Embed(colour=nextcord.Colour.green())
     embed.set_thumbnail(
         url="https://cdn.discordapp.com/attachments/762430826755260449/764946212527931392/die.png"
     )
@@ -89,49 +168,143 @@ async def fact(ctx: commands.Context):
  
  
 
- 
- 
-@commands.has_permissions(administrator=True)
 
+
+
+
+@bot.command(pass_context=True)
+async def version(ctx):
+        myEmbed = nextcord.Embed (title="current Version", description= " version 1.0 :)", color=0x00ff00)
+        myEmbed.add_field( name = "Version Code", value = 'V1.0' , inline=False)
+        myEmbed.add_field( name = "released", value = today , inline=False)
+        myEmbed.set_author (name= "matt quintanilla")
+        myEmbed.set_footer (text = ".")
+        
+        await ctx.channel.send(embed=myEmbed)
+ 
+
+
+
+bot.command()
+async def load(ctx, extension):
+    bot.load_extension(f"cogs.{extension}")
+
+
+bot.command()
+async def unload(ctx, extension):
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            client.load_extension(f"cogs.{filename[:-3]}")
+
+@bot.event
+async def on_command_error(ctx, error): 
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send(f"Invalid command used")
+    
+    else:
+        raise error
+       
+
+
+
+class DurationConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        ammount = argument[:-1]
+        unit = argument[-1]
+        if ammount.isdigit() and unit in ["s," "m"]:
+
+            return(int(ammount), unit)
+
+        raise commands.BadArgument(message="Not a valid duration")
+
+
+
+
+
+
+
+ 
+#Admin commands
+@bot.command()
+@commands.has_role('administrator')
+async def clear(ctx, amount=6):
+    await ctx.channel.purge(limit=amount)
+@clear.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
+
+
+@bot.command()
 async def changeprefix(ctx, prefix):
-    
-    #Change the prefix for your guild
+    """
+    Change the prefix for your guild
  
-    #Args:
-        #prefix: The new prefix to use
-    
-        prefixes[str(ctx.guild.id)] = prefix
-        prefixes.save()
-        await ctx.send(f"Prefix has been changed to `{prefix}`")
- 
+    Args:
+        prefix: The new prefix to use
+    """
+    prefixes[str(ctx.guild.id)] = prefix
+    prefixes.save()
+    await ctx.send(f"Prefix has been changed to `{prefix}`")
 
 
 @bot.command()
-async def kick(ctx, member : discord.Member, *, reason=None):
+@commands.has_role('administrator')
+async def kick(ctx, member : nextcord.Member, *, reason=None):
     await member.kick(reason=reason)
+@kick.error
+async def kick_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
 
 @bot.command()
-async def ban(ctx, member : discord.Member, *, reason=None):
+@commands.has_role('administrator')
+async def ban(ctx, member : nextcord.Member, *, reason=None):
     await member.ban(reason=reason)
-    await ctx.send(f"Banned {member.mention}")
+@ban.error
+async def ban_error(ctx, error):
+ if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
+
+@kick.error
+async def kick_error(ctx, error):
+ if isinstance(error, BadArgument):
+        await ctx.send("user not found.")
+@ban.error
+async def ban_error(ctx, error):
+ if isinstance(error, BadArgument):
+        await ctx.send("user not found.")
+
 @bot.command()
-async def unban(ctx, user: discord.User): 
+async def unban(ctx, user: nextcord.User): 
     banned_users = await ctx.guild.bans()
     if user in banned_users:
         await ctx.guild.unban(user)
         await ctx.send(f"Unbanned {user.mention}")
 
+bot.command()
+async def tempban(ctx, member: commands.MemberConverter, duration: DurationConverter):
+    multiplier = {"s": 1, "m" : 60}
 
-@bot.command()
-async def clear(ctx, amount=6):
-    
-    #Clear messages from a channel
- 
-    #Args:
-        #amount (optional): Number of messages to remove. Defaults to 6.
-    
-        await ctx.channel.purge(limit=amount)
+    amount, unit = duration
 
+
+    await ctx.guild.ban(member)
+    await ctx.send(f"{member} has been banned for {amount}{ unit}.")
+    await asyncio.sleep(amount * multiplier [unit])
+    await ctx.guild.unban(member)
+
+
+
+
+
+@bot.event
+async def on_message(message):
+    if profanity.contains_profanity(message.content): 
+        await message.delete()
+        await message.author.send("""Those Words are Not Allowed To Be Used! Continued Use Of Mentioned Words Will Lead To a Punishment!""")
+    else:
+        await bot.process_commands(message)
 
 
 
