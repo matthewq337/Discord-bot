@@ -1,13 +1,16 @@
 import asyncio
 import json
+from logging import PlaceHolder
 import os
 import random
 import aiohttp
 import nextcord
 import discord
+import pretty_errors
 from random import choice, randint
+from datetime import datetime
 from typing import Optional
-from nextcord import embeds
+from nextcord import Embed
 from nextcord.ext.commands import BucketType
 from nextcord.ext.commands import (CommandNotFound, BadArgument, MissingRequiredArgument, CommandOnCooldown)
 from nextcord.ext.commands import cog
@@ -24,17 +27,16 @@ from datetime import date
 from nextcord.ext.commands import command, cooldown
 from better_profanity import profanity
 from nextcord.ext import commands
+from nextcord import Forbidden
+from nextcord.utils import get
 today = date.today()
 load_dotenv()
 intents = nextcord.Intents.all()
 TOKEN=""
+def get_prefix(bot, message):
+    return prefixes.get(str(message.guild.id), DEFAULT_PREFIX)
 
-
-
-
-
-
-Intents = nextcord.Intents.default()
+bot = commands.Bot(command_prefix=get_prefix, intents=discord.Intents.all())
 intents.members = True
 initial_extensions =[]
     
@@ -48,11 +50,9 @@ if __name__ == "_main__":
 
 
 
-def get_prefix(bot, message):
-    return prefixes.get(str(message.guild.id), DEFAULT_PREFIX)
+
  
 
-bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command("help")
 DEFAULT_PREFIX = "!"
 
@@ -86,26 +86,44 @@ def syntax(command):
     return f"{cmd_and_aliases} {params}"
 
 
-
-
-    
-
-  
-
-
-
-
-
- 
- 
 @bot.event
 async def on_ready():
-    print(f"logged in as {bot.user}")
-    for folder in os.listdir("modules"):
-        if os.path.exists(os.path.join("modules", folder, "cog.py")):
-            client.load_extension(f"modules.{folder}.cog")
-    await bot.change_presence( 
-        status=nextcord.Status.online, activity=nextcord.Game("tf2"))
+        print(f"logged in as {bot.user}")
+        for folder in os.listdir("modules"):
+            if os.path.exists(os.path.join("modules", folder, "cog.py")):
+                client.load_extension(f"modules.{folder}.cog")
+        await bot.change_presence( 
+            status=nextcord.Status.online, activity=nextcord.Game("tf2"))
+
+@bot.event
+async def on_message_delete(message):
+    embed = nextcord.Embed(title=f"{message.author.name} has edited a message | {message.author.id}", description=f"{message.content}")
+    channel  = bot.get_channel(792547157629993032)
+    await channel.send(embed=embed)
+
+@bot.event
+async def on_message_edit(message_before, message_after):
+    embed = nextcord.Embed(title=f"{message_before.author.name} has edited a message | {message_before.author.id}")
+    embed.add_field(name="Before Message", value=f"{message_before.content}", inline=False)
+    embed.add_field(name="After Message", value=f"{message_after.content}", inline=False)
+    channel  = bot.get_channel(792547157629993032)
+    await channel.send(embed=embed)
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+    
 
     
     
@@ -247,6 +265,41 @@ async def changeprefix(ctx, prefix):
     prefixes.save()
     await ctx.send(f"Prefix has been changed to `{prefix}`")
 
+@bot.command()
+@commands.has_role('administrator')
+async def mute(ctx, member : nextcord.Member, *, reason=None):
+    guild = ctx.guild
+    muteRole = nextcord.utils.get(guild.roles, name="Muted")
+    
+    if not muteRole:
+        
+        muteRole = await guild.create_role(name="Muted")
+       
+        for channel in guild.channels:
+            await ctx.send("No mute roll has been found Creating the roll now")
+            await channel.set_permissions(muteRole, speak=False, send_messages=False, read_message_history=True, read_messages=True)
+           
+    await member.add_roles(muteRole, reason=reason)
+    await member.send(f"you have been muted from **{guild.name}** | Reason: **{reason}**")
+
+
+@bot.command()
+@commands.has_role('administrator')
+async def unmute(ctx, member : nextcord.Member, *, reason=None):
+    guild = ctx.guild
+    muteRole = nextcord.utils.get(guild.roles, name="Muted")
+    
+    if not muteRole:
+        
+        muteRole = await guild.create_role(name="Muted")
+       
+        
+           
+    await member.remove_roles(muteRole, reason=reason)
+    await member.send(f"you have been unmuted from **{guild.name}** | Reason: **{reason}**")
+
+
+
 
 @bot.command()
 @commands.has_role('administrator')
@@ -282,7 +335,7 @@ async def unban(ctx, user: nextcord.User):
         await ctx.guild.unban(user)
         await ctx.send(f"Unbanned {user.mention}")
 
-bot.command()
+@bot.command()
 async def tempban(ctx, member: commands.MemberConverter, duration: DurationConverter):
     multiplier = {"s": 1, "m" : 60}
 
@@ -295,8 +348,16 @@ async def tempban(ctx, member: commands.MemberConverter, duration: DurationConve
     await ctx.guild.unban(member)
 
 
+            
 
-
+@mute.error
+async def mute_error(ctx, error):
+ if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
+@unmute.error
+async def unmute_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
 
 @bot.event
 async def on_message(message):
