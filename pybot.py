@@ -110,8 +110,10 @@ async def on_message_edit(message_before, message_after):
     await channel.send(embed=embed)
 
 
-
-
+@bot.event
+async def on_member_join(member):
+    welcomeEmbed = nextcord.Embed(title = f"New member", description = f"{member.name} has joined the server", color = nextcord.Color.blue())
+    await bot.get_channel(792547157629993032).send(embed = welcomeEmbed)
 
 
 
@@ -122,24 +124,18 @@ async def on_message_edit(message_before, message_after):
 
 
  
- 
-    
+
 
     
     
     
     
-@bot.command(description = "help command")
+@bot.command()
 async def help(ctx):
-    embed = nextcord.Embed(title="help", description="help command")
-    for command in bot.walk_commands():
-        description = command.description
-        if not description or description is None or description == "":
-            description= "no description provided"
-        embed.add_field(name=f"`{command.name}{command.signature if command.signature is not None else ''}`", value=description)
-    await ctx.send(embed=embed)
- 
- 
+    embed = nextcord.Embed(title="help commands")
+    embed.add_field(name = 'admin', value = "`ban`, `clear`, `changeprefix`, `mute`, `unmute`, `slowmode`, `kick`, `tempban`")
+    embed.add_field(name = 'member', value = "`ping`, `roll`, `fact`, `version`")
+    await ctx.send(embed = embed)
  
 @bot.event
 async def on_guild_join(guild):
@@ -148,7 +144,7 @@ async def on_guild_join(guild):
  
  
 @bot.command()
-@cooldown(1, 60, BucketType.user)
+@commands.cooldown(1, 60, commands.cooldowns.BucketType.user)
 async def ping(ctx: commands.Context):
     """
     Returns the bots estimated latency to discord servers
@@ -156,7 +152,7 @@ async def ping(ctx: commands.Context):
     await ctx.send(f"pong {round(bot.latency * 1000)}ms")
 
 
-@bot.command(name = "roll ", description="roll a dice")
+@bot.command(name = "roll")
 async def roll(ctx: commands.Context):
     """
     Get a random number from 0-500
@@ -188,6 +184,16 @@ async def fact(ctx: commands.Context):
 
 
 
+
+@bot.command()
+async def serverinfo(ctx):
+    role_count = len(ctx.guild.roles)
+    list_of_bots = [bot.mention for bot in ctx.guild.members if bot.bot]
+
+    serverinfoEmbed = nextcord.Embed(timestamp=ctx.message.created_at, color=ctx.author.color)
+    serverinfoEmbed.add_field(name='Name', value=f"{ctx.guild.name}", inline =False)
+    serverinfoEmbed.add_field(name='Member Count', value=f"{ctx.guild.member_count}", inline =False)
+    await ctx.send(embed = serverinfoEmbed)
 
 
 @bot.command(pass_context=True)
@@ -241,7 +247,7 @@ class DurationConverter(commands.Converter):
 
 
 
- 
+
 #Admin commands
 @bot.command()
 @commands.has_role('administrator')
@@ -299,16 +305,33 @@ async def unmute(ctx, member : nextcord.Member, *, reason=None):
     await member.send(f"you have been unmuted from **{guild.name}** | Reason: **{reason}**")
 
 
+@bot.command()
+async def slowmode(ctx, time:int):
+    try:
+        if time == 0:
+            await ctx.send("Slowmode off")
+            await ctx.channel.edit(slowmode_delay = 0)
+        elif time > 21600:
+            await ctx.send("you can not set the slowmode above 6 hours")
+            return
+        else:
+            await ctx.channel.edit(slowmode_delay = time)
+            await ctx.semd(f" slow mode set to {time} seconds")
+    except Exception:
+        await print("failed")
 
+
+@slowmode.error
+async def slowmode_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("Looks like you don't have the permissions to do that action.")
+
+ 
 
 @bot.command()
 @commands.has_role('administrator')
 async def kick(ctx, member : nextcord.Member, *, reason=None):
     await member.kick(reason=reason)
-@kick.error
-async def kick_error(ctx, error):
-    if isinstance(error, commands.MissingRole):
-        await ctx.send("Looks like you don't have the permissions to do that action.")
 
 @bot.command()
 @commands.has_role('administrator')
@@ -367,6 +390,9 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
-
+@ping.error
+async def error(ctx, error):
+ if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("please try this command again after {:.2f}s".format(error.retry_after))
 
 bot.run("")
