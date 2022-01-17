@@ -48,7 +48,6 @@ else:
         json.dump(configTemplate, f)
 
 
-12
 
  
 
