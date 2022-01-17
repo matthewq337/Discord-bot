@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import asyncio
 import json
 from logging import PlaceHolder
