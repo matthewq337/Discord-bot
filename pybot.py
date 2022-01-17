@@ -396,5 +396,3 @@ async def on_message(message):
 async def error(ctx, error):
  if isinstance(error, commands.CommandOnCooldown):
         await ctx.send("please try this command again after {:.2f}s".format(error.retry_after))
-
-bot.run("")
