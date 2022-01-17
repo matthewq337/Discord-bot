@@ -48,7 +48,7 @@ else:
         json.dump(configTemplate, f)
 
 
-
+test
  
 
 bot.remove_command("help")
