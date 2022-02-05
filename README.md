@@ -17,7 +17,7 @@ example of bot
 commands list can be found in the [wiki](https://www.mattquintanilla.xyz/bot/commands.html)
 
 
-**Dependencies**
+#Dependencies
 <p>
 </p>
 
