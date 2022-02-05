@@ -18,8 +18,9 @@ commands list can be found in the [wiki](https://www.mattquintanilla.xyz/bot/com
 
 
 **Dependencies**
-<a>
-</a>
+<p>
+</p>
+
 aiohttp
 
 nextcord
