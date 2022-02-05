@@ -45,7 +45,7 @@ if os.path.exists(os.getcwd() + "/config.json"):
     with open("./config.json") as f:
         configData = json.load(f)
 
-h
+hh
 
 else:
     configTemplate = {"token": "", "Prefix": "!"}
