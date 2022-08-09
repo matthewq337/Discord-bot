@@ -1,0 +1,6 @@
+aiohttp==3.8.1
+better_profanity==0.7.0
+discord.py==1.7.3
+nextcord==2.0.0
+pretty_errors==1.2.25
+python-dotenv==0.20.0

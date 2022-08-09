@@ -15,6 +15,7 @@ discord bot written in python
 
 example of bot
 commands list can be found in the [wiki](https://www.mattquintanilla.xyz/bot/commands.html)
+<<<<<<< HEAD
 
 
 # Dependencies
@@ -30,3 +31,10 @@ pretty-errors
 python-dotenv
 
 better_profanity
+||||||| parent of bba4f5a (V1.0)
+**Dependencies**
+=======
+**Dependencies**
+git clone https://github.com/matthewq337/Discord-bot
+pip install -r requirements.txt
+>>>>>>> bba4f5a (V1.0)

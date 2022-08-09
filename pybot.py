@@ -29,6 +29,8 @@ from better_profanity import profanity
 from nextcord.ext import commands
 from nextcord import Forbidden
 from nextcord.utils import get
+from nextcord import Interaction, SlashOption, ChannelType 
+from nextcord.abc import GuildChannel
 today = date.today()
 load_dotenv()
 intents = nextcord.Intents.all()
@@ -36,7 +38,7 @@ intents = nextcord.Intents.all()
 def get_prefix(bot, message):
     return prefixes.get(str(message.guild.id), DEFAULT_PREFIX)
 
-bot = commands.Bot(command_prefix=get_prefix, intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=get_prefix, intents=nextcord.Intents.all())
 intents.members = True
 initial_extensions =[]
     
@@ -48,13 +50,13 @@ if os.path.exists(os.getcwd() + "/config.json"):
 
 
 else:
-    configTemplate = {"token": "", "Prefix": "!"}
+    configTemplate = {"Token": "", "Prefix": "!"}
     
     with open(os.getcwd() + "/config.json", "w+") as f:
         json.dump(configTemplate, f)
 
 
-token = configData["Token"]
+Token = configData["Token"]
 prefix = configData["Prefix"]
 
 
@@ -119,7 +121,7 @@ async def on_member_join(member):
 
 
 
-
+testingServerID = 815719310198177792
 
 
 
@@ -396,3 +398,5 @@ async def on_message(message):
 async def error(ctx, error):
  if isinstance(error, commands.CommandOnCooldown):
         await ctx.send("please try this command again after {:.2f}s".format(error.retry_after))
+        print(configData)
+bot.run(Token)
